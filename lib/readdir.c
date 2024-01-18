@@ -10,10 +10,23 @@
 #include "global.h"
 #include "proto.h"
 
-// PUBLIC char* search_dir(char* path) {
-//     MESSAGE msg;
-//     msg.type = SEARCH;
-//     memcpy(msg.pBUF, path, strlen(path));
-//     send_recv(BOTH, TASK_FS, &msg);
-//     return msg.pBUF;
-// }
+
+PUBLIC void readdir(char path[MAX_PATH], char result[RESULT_MAX]) 
+{
+    MESSAGE msg;
+    msg.type = SEARCH;
+    // directory/path name 
+    msg.PATHNAME = path;
+    msg.NAME_LEN = MAX_PATH;
+    // where the results shall be stored
+    msg.BUF = result;
+    msg.BUF_LEN = RESULT_MAX;
+
+    send_recv(BOTH, TASK_FS, &msg);
+
+    result[RESULT_MAX-1] = '\0';
+    // phys_copy((void*)va2la(, pathname),
+    //     (void*)va2la(TASK_FS, fs_msg.BUF),
+    //     fs_msg.BUFLEN);
+    return; 
+}

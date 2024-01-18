@@ -146,5 +146,8 @@ PUBLIC int	stat		(const char *path, struct stat *buf);
 /* lib/syslog.c */
 PUBLIC	int	syslog		(const char *fmt, ...);
 
+// ################################
+#define RESULT_MAX 200
+PUBLIC void readdir(char path[MAX_PATH], char result[RESULT_MAX]);
 
 #endif /* _ORANGES_STDIO_H_ */

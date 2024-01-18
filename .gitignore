@@ -1,12 +1,13 @@
 *.bin
 *.tar
-*.img
+*.img*
 *.o
 
 cat 
 echo 
 pwd
 ticker
+ls
 
 *.a
 

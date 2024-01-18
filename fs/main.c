@@ -75,9 +75,10 @@ PUBLIC void task_fs()
 		case EXIT:
 			fs_msg.RETVAL = fs_exit();
 			break;
-		// case SEARCH:
-		// 	// fs_msg.RETVAL = fs_search();
-		// 	break;
+		case SEARCH:
+			// fs_msg.BUF = fs_readdir();
+			fs_readdir();
+			break;
 
 		/* case LSEEK: */
 		/* 	fs_msg.OFFSET = do_lseek(); */
@@ -118,6 +119,8 @@ PUBLIC void task_fs()
 		case STAT:
 			break;
 		case RESUME_PROC:
+			break;
+		case SEARCH:
 			break;
 		default:
 			assert(0);

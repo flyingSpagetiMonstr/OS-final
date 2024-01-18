@@ -38,14 +38,21 @@ OBJS		= kernel/kernel.o kernel/start.o kernel/main.o\
 			fs/main.o fs/open.o fs/misc.o fs/read_write.o\
 			fs/link.o\
 			fs/disklog.o\
-			kernel/page.o # ######################
+			kernel/page.o\
+			fs/readdir.o
+
+# ###################### 
 
 LOBJS		=  lib/syscall.o\
 			lib/printf.o lib/vsprintf.o\
 			lib/string.o lib/misc.o\
 			lib/open.o lib/read.o lib/write.o lib/close.o lib/unlink.o\
 			lib/getpid.o lib/stat.o\
-			lib/fork.o lib/exit.o lib/wait.o lib/exec.o
+			lib/fork.o lib/exit.o lib/wait.o lib/exec.o\
+			lib/readdir.o
+
+# ###################### 
+
 DASMOUTPUT	= kernel.bin.asm
 
 # All Phony Targets
@@ -213,3 +220,9 @@ fs/disklog.o: fs/disklog.c
 # ########################################
 kernel/page.o : kernel/page.asm
 	$(ASM) $(ASMKFLAGS) -o $@ $<
+
+lib/readdir.o: lib/readdir.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+fs/readdir.o: fs/readdir.c
+	$(CC) $(CFLAGS) -o $@ $<

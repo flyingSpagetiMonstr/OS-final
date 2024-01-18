@@ -75,9 +75,10 @@ PUBLIC void task_fs()
 		case EXIT:
 			fs_msg.RETVAL = fs_exit();
 			break;
-		case SEARCH:
-			// fs_msg.RETVAL = fs_search();
-			break;
+		// case SEARCH:
+		// 	// fs_msg.RETVAL = fs_search();
+		// 	break;
+
 		/* case LSEEK: */
 		/* 	fs_msg.OFFSET = do_lseek(); */
 		/* 	break; */

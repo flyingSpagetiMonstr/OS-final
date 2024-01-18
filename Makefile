@@ -49,7 +49,7 @@ LOBJS		=  lib/syscall.o\
 			lib/open.o lib/read.o lib/write.o lib/close.o lib/unlink.o\
 			lib/getpid.o lib/stat.o\
 			lib/fork.o lib/exit.o lib/wait.o lib/exec.o\
-			lib/readdir.o
+			lib/readdir.o lib/lseek.o
 
 # ###################### 
 
@@ -225,4 +225,7 @@ lib/readdir.o: lib/readdir.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 fs/readdir.o: fs/readdir.c
+	$(CC) $(CFLAGS) -o $@ $<
+	
+lib/lseek.o: lib/lseek.c
 	$(CC) $(CFLAGS) -o $@ $<

@@ -148,6 +148,8 @@ PUBLIC	int	syslog		(const char *fmt, ...);
 
 // ################################
 #define RESULT_MAX 200
-PUBLIC void readdir(char path[MAX_PATH], char result[RESULT_MAX]);
+PUBLIC void readdir(char path[], char result[RESULT_MAX]);
+
+PUBLIC int lseek(int fd, int offset, int whence);
 
 #endif /* _ORANGES_STDIO_H_ */

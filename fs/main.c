@@ -80,9 +80,10 @@ PUBLIC void task_fs()
 			fs_readdir();
 			break;
 
-		/* case LSEEK: */
-		/* 	fs_msg.OFFSET = do_lseek(); */
-		/* 	break; */
+		case LSEEK:
+			fs_msg.OFFSET = do_lseek();
+			break; 
+			
 		case STAT:
 			fs_msg.RETVAL = do_stat();
 			break;
@@ -121,6 +122,7 @@ PUBLIC void task_fs()
 		case RESUME_PROC:
 			break;
 		case SEARCH:
+		case LSEEK:
 			break;
 		default:
 			assert(0);

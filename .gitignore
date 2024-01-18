@@ -2,12 +2,15 @@
 *.tar
 *.img*
 *.o
+*test.c
 
 cat 
 echo 
 pwd
 ticker
 ls
+mod
+
 
 *.a
 
@@ -17,3 +20,5 @@ stVwXu7w
 scripts/
 
 krnl.map
+
+lseektest

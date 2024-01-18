@@ -11,13 +11,13 @@
 #include "proto.h"
 
 
-PUBLIC void readdir(char path[MAX_PATH], char result[RESULT_MAX]) 
+PUBLIC void readdir(char path[], char result[RESULT_MAX]) 
 {
     MESSAGE msg;
     msg.type = SEARCH;
     // directory/path name 
     msg.PATHNAME = path;
-    msg.NAME_LEN = MAX_PATH;
+    msg.NAME_LEN = strlen(path);
     // where the results shall be stored
     msg.BUF = result;
     msg.BUF_LEN = RESULT_MAX;

@@ -12,7 +12,7 @@ CFLAGS		= -I ../include/ -c -fno-builtin -fno-stack-protector -Wall -m32
 LDFLAGS		= -Ttext 0x1000 -m elf_i386
 DASMFLAGS	= -D
 LIB		= ../lib/orangescrt.a
-BIN		= echo pwd cat ticker ls mod # lseektest
+BIN		= echo pwd cat ticker ls mod stackoverflow # lseektest
 
 # All Phony Targets
 .PHONY : everything final clean realclean disasm all install
@@ -76,6 +76,15 @@ mod.o: mod.c ../include/type.h ../include/stdio.h ../include/string.h ../include
 
 mod : mod.o start.o $(LIB)
 	$(LD) $(LDFLAGS) -o $@ $? 
+
+stackoverflow.o: stackoverflow.c ../include/type.h ../include/stdio.h ../include/string.h
+	$(CC) $(CFLAGS) -o $@ $<
+
+stackoverflow : stackoverflow.o start.o $(LIB)
+	$(LD) $(LDFLAGS) -o $@ $?
+
+stackoverflow.asm: stackoverflow.c ../include/type.h ../include/stdio.h ../include/string.h
+	$(CC) -I ../include/ -S -fno-builtin -fno-stack-protector -Wall -m32 -o $@ $<
 
 # lseektest.o: lseektest.c ../include/type.h ../include/stdio.h ../include/string.h 
 # 	$(CC) $(CFLAGS) -o $@ $<

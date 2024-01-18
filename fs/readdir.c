@@ -30,7 +30,7 @@
 PUBLIC void fs_readdir() {
 
     char filename[MAX_PATH] = {0};
-    char result[MAX_PATH] = {0};
+    char result[RESULT_MAX] = {0};
     struct inode* inode;
     int index = 0;
 

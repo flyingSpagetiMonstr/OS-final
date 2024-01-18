@@ -46,6 +46,7 @@ LABEL_START:			; <--- 从这里开始 *************
 	mov	ds, ax
 	mov	es, ax
 	mov	ss, ax
+
 	mov	sp, BaseOfStack
 
 	mov	dh, 0			; "Loading  "

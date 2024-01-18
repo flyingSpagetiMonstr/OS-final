@@ -17,6 +17,8 @@
 #include "global.h"
 #include "proto.h"
 
+// ################
+#include <elf.h>
 
 /*****************************************************************************
  *                               kernel_main
@@ -71,11 +73,6 @@ PUBLIC int kernel_main()
 		// if (strcmp(t->name, "INIT") != 0) {
 		if (i != INIT) {
 
-// disp_str(t->name);
-// disp_str("INIT");
-
-// disp_str("X");
-// disp_str(" ");
 
 			p->ldts[INDEX_LDT_C]  = gdt[SELECTOR_KERNEL_CS >> 3];
 			p->ldts[INDEX_LDT_RW] = gdt[SELECTOR_KERNEL_DS >> 3];
@@ -85,8 +82,6 @@ PUBLIC int kernel_main()
 			p->ldts[INDEX_LDT_RW].attr1 = DA_DRW | priv << 5;
 		}
 		else {		/* INIT process */
-// int YYYYYYYYYYYYYYYYYYY = 0;
-// assert(YYYYYYYYYYYYYYYYYYY);
 
 			unsigned int k_base;
 			unsigned int k_limit;
@@ -110,10 +105,11 @@ PUBLIC int kernel_main()
 		}
 
 		p->regs.cs = INDEX_LDT_C << 3 |	SA_TIL | rpl;
-		p->regs.ds =
-			p->regs.es =
-			p->regs.fs =
-			p->regs.ss = INDEX_LDT_RW << 3 | SA_TIL | rpl;
+		p->regs.ds = p->regs.es = p->regs.fs = p->regs.ss
+			= INDEX_LDT_RW << 3 | SA_TIL | rpl;
+// ########################
+		// p->regs.fs = (SELECTOR_KERNEL_CS & SA_RPL_MASK) | rpl;
+// ########################
 		p->regs.gs = (SELECTOR_KERNEL_GS & SA_RPL_MASK) | rpl;
 		p->regs.eip	= (u32)t->initial_eip;
 		p->regs.esp	= (u32)stk;
@@ -214,7 +210,8 @@ void untar(const char * filename)
 	unsigned char buf[SECTOR_SIZE * 16];
 	int chunk = sizeof(buf);
 
-	while (1) {
+	while (1) 
+	{
 		read(fd, buf, SECTOR_SIZE);
 		if (buf[0] == 0)
 			break;
@@ -228,6 +225,13 @@ void untar(const char * filename)
 			f_len = (f_len * 8) + (*p++ - '0'); /* octal */
 
 		int bytes_left = f_len;
+
+		unsigned char checksum = 0;
+		char chk_file_name[MAX_PATH] = {0};
+		sprintf(chk_file_name, "chk-%s", phdr->name);
+		// printf("%s\n", chk_file_name);
+		// printf("%s\n", phdr->name);
+
 		int fdout = open(phdr->name, O_CREAT | O_RDWR);
 		if (fdout == -1) {
 			printf("    failed to extract file: %s\n", phdr->name);
@@ -236,46 +240,44 @@ void untar(const char * filename)
 		}
 		printf("    %s (%d bytes)\n", phdr->name, f_len);
 
-		// int pwd = (strcmp(phdr->name, "pwd") == 0);
+		// int first_read = 1;
+		// int is_elf = 0;
+		// char tmp[5] = {0};
+		int chk = (strcmp(phdr->name, "kernel.bin") != 0);
 
 		while (bytes_left) {
 			int iobytes = min(chunk, bytes_left);
-			read(fd, buf,
-			     ((iobytes - 1) / SECTOR_SIZE + 1) * SECTOR_SIZE);
-
-			// if (pwd)
+			read(fd, buf, ((iobytes - 1) / SECTOR_SIZE + 1) * SECTOR_SIZE);
+			// if (first_read)
 			// {
-			// 	printf("PWD\n");
-			// 	printf("size: %d\n", phdr->size);
-			// 	for (int i = 1; i <= 100; i++)
-			// 	{
-			// 		if (i%10 == 0)
-			// 		{
-			// 			printf("|%d\n", i/10);
-			// 			delay(0xf);
-			// 		}
-			// 		printf("%x", buf[i-1]); 
-			// 	}
-			// }
-			
-			// printf("iobytes: %d\n", iobytes);
-			// printf("fdout: %d\n", fdout);
-			// fd: 2
+			// 	sprintf(tmp, (char*)(((Elf32_Ehdr*)buf)->e_ident)); tmp[4] = '\0';
+			// 	printf(":::%s", ((Elf32_Ehdr*)buf)->e_ident);
+			// 	printf(":::%s", tmp);
+			// 	is_elf = (strcmp(tmp, ELFMAG) == 0);
+			// 	first_read = 0;
+			// }			
 
 			write(fdout, buf, iobytes);
-			// if (pwd)
-			// {
-			// 	printf("wrote\n");
-			// }
+
+			// calc checksum
+			for (int i = 0; i < iobytes; i++)
+			{
+				checksum ^= buf[i];
+			}
 			bytes_left -= iobytes;
 		}
 		close(fdout);
-		// if (pwd)
-		// {
-		// 	break;
-		// }
-	}
 
+		// store checksum into file
+		// if (is_elf)
+		if (chk)
+		{
+			int fd_checksum = open(chk_file_name, O_CREAT | O_RDWR);
+			printf("chk in: %s\n", chk_file_name);
+			write(fd_checksum, &checksum, sizeof(checksum));
+			close(fd_checksum);
+		}
+	}
 	close(fd);
 
 	printf(" done]\n");
@@ -298,7 +300,7 @@ void shabby_shell(const char * tty_name)
 
 	char rdbuf[128];
 
-	while (1) 
+	while (1)
 	{
 		write(1, "$ ", 2);
 		int r = read(0, rdbuf, 70);
@@ -398,6 +400,8 @@ void Init()
 	assert(fd_stdout == 1);
 
 	printf("> Init() is running ...\n");
+	// printf("> Address of printf: 0x%x\n", printf);
+	// printf("> Address of exit: 0x%x\n", exit);
 
 	/* extract `cmd.tar' */
 	untar("/cmd.tar");

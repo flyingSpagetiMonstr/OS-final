@@ -147,7 +147,7 @@ PUBLIC int	stat		(const char *path, struct stat *buf);
 PUBLIC	int	syslog		(const char *fmt, ...);
 
 // ################################
-#define RESULT_MAX 200
+#define RESULT_MAX (160*3)
 PUBLIC void readdir(char path[], char result[RESULT_MAX]);
 
 PUBLIC int lseek(int fd, int offset, int whence);

@@ -12,13 +12,13 @@ CFLAGS		= -I ../include/ -c -fno-builtin -fno-stack-protector -Wall -m32
 LDFLAGS		= -Ttext 0x1000 -m elf_i386
 DASMFLAGS	= -D
 LIB		= ../lib/orangescrt.a
-BIN		= echo pwd cat ticker ls mod stackoverflow # lseektest
+BIN		= cat ticker mod stack ls target 
 
 # All Phony Targets
 .PHONY : everything final clean realclean disasm all install
 
 # Default starting position
-everything : $(BIN)
+everything : $(BIN) echo pwd lseektest
 
 install : all clean
 	cp ../kernel.bin ./ -v
@@ -77,13 +77,13 @@ mod.o: mod.c ../include/type.h ../include/stdio.h ../include/string.h ../include
 mod : mod.o start.o $(LIB)
 	$(LD) $(LDFLAGS) -o $@ $? 
 
-stackoverflow.o: stackoverflow.c ../include/type.h ../include/stdio.h ../include/string.h
+stack.o: stack.c ../include/type.h ../include/stdio.h ../include/string.h
 	$(CC) $(CFLAGS) -o $@ $<
 
-stackoverflow : stackoverflow.o start.o $(LIB)
+stack : stack.o start.o $(LIB)
 	$(LD) $(LDFLAGS) -o $@ $?
 
-stackoverflow.asm: stackoverflow.c ../include/type.h ../include/stdio.h ../include/string.h
+stack.asm: stack.c ../include/type.h ../include/stdio.h ../include/string.h
 	$(CC) -I ../include/ -S -fno-builtin -fno-stack-protector -Wall -m32 -o $@ $<
 
 # lseektest.o: lseektest.c ../include/type.h ../include/stdio.h ../include/string.h 
@@ -91,3 +91,15 @@ stackoverflow.asm: stackoverflow.c ../include/type.h ../include/stdio.h ../inclu
 
 # lseektest : lseektest.o start.o $(LIB)
 # 	$(LD) $(LDFLAGS) -o $@ $? 
+
+payload.o: payload.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+payload : payload.o start.o
+	$(LD) $(LDFLAGS) -o $@ $^
+
+target.o: target.c ../include/type.h ../include/stdio.h
+	$(CC) $(CFLAGS) -o $@ $<
+
+target : target.o start.o $(LIB)
+	$(LD) $(LDFLAGS) -o $@ $?

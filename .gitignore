@@ -11,7 +11,6 @@ ticker
 ls
 mod
 
-
 *.a
 
 stVwXu7w copy
@@ -22,5 +21,13 @@ scripts/
 krnl.map
 
 lseektest
-stackoverflow.asm
-stackoverflow
+stack.asm
+stack
+
+command/payload
+target
+
+command/others/elf.h
+# command/payload.c
+
+*.exe

@@ -10,3 +10,8 @@
 - printf 漏洞
 - 一般栈溢出漏洞 / 内存漏洞
 - 可执行文件篡改
+
+
+- low level debug:
+  - tty0 shell
+  - disp_pos in cosole.c

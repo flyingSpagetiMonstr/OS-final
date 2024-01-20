@@ -42,7 +42,7 @@ PUBLIC int kernel_main()
 	struct task *t;
 	struct proc *p = proc_table;
 
-	char * stk = task_stack + STACK_SIZE_TOTAL;
+	char *stk = task_stack + STACK_SIZE_TOTAL;
 
 	for (i = 0; i < NR_TASKS + NR_PROCS; i++,p++,t++) 
 	{
@@ -113,7 +113,7 @@ PUBLIC int kernel_main()
 		p->regs.eip	= (u32)t->initial_eip;
 		p->regs.esp	= (u32)stk;
 // ##########################
-			p->regs.ebp	= -1;
+		p->regs.ebp	= INIT_EBP;
 // ##########################
 		p->regs.eflags	= eflags;
 
@@ -449,7 +449,11 @@ void Init()
  *======================================================================*/
 void TestA()
 {
-	for(;;);
+	for(;;)
+	{
+		kill(10);
+		delay(0xff);
+	};
 }
 
 /*======================================================================*

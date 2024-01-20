@@ -152,3 +152,5 @@ PUBLIC	int	printx(char* str);
 // #################################
 PUBLIC void fs_readdir(void);
 PUBLIC int do_lseek(void);
+
+PUBLIC void do_kill(int pid);

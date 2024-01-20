@@ -49,7 +49,9 @@
 			 * (ok to allocated to a new process)
 			 */
 // #####################
-#define ABORTED 0x40
+// #define ABORTED 0x40
+#define KILLED 0xb10
+#define INIT_EBP 0xffffffff
 
 
 
@@ -195,8 +197,9 @@ enum msgtype {
 	DEV_WRITE,
 	DEV_IOCTL,
 
-	// my FS msg:
-	SEARCH
+	
+	SEARCH, // fs
+	KILL // mm
 };
 
 // enum file_mode{

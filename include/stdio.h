@@ -152,4 +152,7 @@ PUBLIC void readdir(char path[], char result[RESULT_MAX]);
 
 PUBLIC int lseek(int fd, int offset, int whence);
 
+// add an return value to tell succeeded or not?
+PUBLIC void	kill (int pid);
+
 #endif /* _ORANGES_STDIO_H_ */

@@ -83,7 +83,7 @@ PUBLIC int do_exec()
 	// printl("stored: %x\n", stored);
 
 #if TAMPER_CHK
-	if (checksum != stored) { printl("> **PROGRAM TAMPERED**: execv canceled.\n"); return -1; }
+	if (checksum != stored) { printl("! **PROGRAM TAMPERED**: Execv canceled.\n"); return -1; }
 #endif
 
 	/* overwrite the current proc image with the new one */
@@ -131,6 +131,8 @@ PUBLIC int do_exec()
 	/* setup eip & esp */
 	proc_table[src].regs.eip = elf_hdr->e_entry; /* @see _start.asm */
 	proc_table[src].regs.esp = PROC_IMAGE_SIZE_DEFAULT - PROC_ORIGIN_STACK;
+	// ########################
+	proc_table[src].regs.ebp = INIT_EBP;
 
 	strcpy(proc_table[src].name, pathname);
 

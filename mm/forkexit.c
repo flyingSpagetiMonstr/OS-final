@@ -283,3 +283,48 @@ PUBLIC void do_wait()
 		send_recv(SEND, pid, &msg);
 	}
 }
+
+// =======================================================================
+PUBLIC void do_kill(int pid)
+{
+	if (proc_table[pid].p_flags == FREE_SLOT)
+	{
+		printl("! **KILL ERROR**: No such process.\n");
+		return;
+	}
+
+	int i;
+	// int pid = mm_msg.source; /* PID of caller */
+	int parent_pid = proc_table[pid].p_parent;
+	struct proc * p = &proc_table[pid];
+
+	/* tell FS, see fs_exit() */
+	MESSAGE msg2fs;
+	msg2fs.type = EXIT;
+	msg2fs.PID = pid;
+	send_recv(BOTH, TASK_FS, &msg2fs);
+
+	free_mem(pid);
+
+	p->exit_status = KILLED;
+
+	if (proc_table[parent_pid].p_flags & WAITING) { /* parent is waiting */
+		proc_table[parent_pid].p_flags &= ~WAITING;
+		cleanup(&proc_table[pid]);
+	}
+	else { /* parent is not waiting */
+		proc_table[pid].p_flags |= HANGING;
+	}
+
+	/* if the proc has any child, make INIT the new parent */
+	for (i = 0; i < NR_TASKS + NR_PROCS; i++) {
+		if (proc_table[i].p_parent == pid) { /* is a child */
+			proc_table[i].p_parent = INIT;
+			if ((proc_table[INIT].p_flags & WAITING) &&
+			    (proc_table[i].p_flags & HANGING)) {
+				proc_table[INIT].p_flags &= ~WAITING;
+				cleanup(&proc_table[i]);
+			}
+		}
+	}
+}

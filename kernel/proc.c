@@ -43,16 +43,15 @@ queue Q_new = {0, 0};
 
 // ##################################
 #define STACK_CHECK 1
-#define ABORT_MAGIC_0 '\1'
-#define ABORT_MAGIC_1 'X'
+#define ABORT_MAGIC "\3\3\3"
+#define KILLER_PID 6 
+// #define ABORT_MAGIC '\3'
+
 void stack_chk(struct proc* p_proc_ready);
 int stack_efl = 0;
 
 PUBLIC void schedule()
 {
-#if STACK_CHECK
-	// only checking processes after INIT (in proc_table)
-	if(p_proc_ready - proc_table > NR_TASKS) stack_chk(p_proc_ready);
 	if (!stack_efl)
 	{
 		if (strcmp(p_proc_ready->name, "stack") == 0)
@@ -60,7 +59,6 @@ PUBLIC void schedule()
 			stack_efl = 1;
 		}
 	}
-#endif
 
 	wash(Q, &Q_block, &Q_new);
 
@@ -118,6 +116,7 @@ PUBLIC void schedule()
 	}
 
 finish:
+	stack_chk(p_proc_ready);
 	return;
 }
 
@@ -222,7 +221,7 @@ PUBLIC int sys_sendrec(int function, int src_dest, MESSAGE* m, struct proc* p)
  *****************************************************************************/
 PUBLIC int ldt_seg_linear(struct proc* p, int idx)
 {
-	struct descriptor * d = &p->ldts[idx];
+	struct descriptor *d = &p->ldts[idx];
 
 	return d->base_high << 24 | d->base_mid << 16 | d->base_low;
 }
@@ -863,9 +862,18 @@ void Q_set(queue *dst)
 	return;
 }
 
+
+#define MAP(ebp) (va2la(pid, ebp))
+
 void stack_chk(struct proc* p_proc_ready)
 {
-	unsigned int *ebp = (unsigned int *)(p_proc_ready->regs.ebp);
+	int pid = p_proc_ready - proc_table;
+
+	if(pid > NR_TASKS) return;
+
+	unsigned int *original_ebp = (unsigned int *)(p_proc_ready->regs.ebp);
+	unsigned int *ebp = MAP(original_ebp);
+
 #if 0
 // ================================= 
 
@@ -882,39 +890,38 @@ void stack_chk(struct proc* p_proc_ready)
 
 // ================================= 
 #else
-// 0x100000 /*  1 MB */
-//      400    /*  1 KB */
-// 0x0ffC00
-
-	unsigned int eip = *(ebp + 1);
-	// if eip is on stack or eip > image size
-
-	// if (eip >= (PROC_IMAGE_SIZE_DEFAULT - PROC_ORIGIN_STACK)
-		// || *ebp == 0)
 	if (stack_efl)
 	{
-		if ((unsigned int)ebp != (unsigned int)-1)
+		if ((u32)ebp != INIT_EBP)
 		{
 			if (*ebp == 0)
 			{
-				// disp_color_str(" eip: ", GREEN);
-				// disp_int(eip);
+				printl("! **STACK CHECK ERROR**: Aborting process.\n");
+				memcpy(p_proc_ready->name, ABORT_MAGIC, sizeof(ABORT_MAGIC)-1);
+				// kill(pid);
 				disp_color_str("##", RED);
 				disp_color_str(p_proc_ready->name, GREEN);
-				disp_color_str(" pid: ", GREEN);
-				disp_int(p_proc_ready - proc_table);
-				disp_color_str(" ebp: ", GREEN);
-				disp_int(ebp);
-				disp_color_str(" *ebp: ", GREEN);
-				disp_int(*ebp);
-				disp_color_str(" esp: ", GREEN);
-				disp_int(p_proc_ready->regs.esp);
 				disp_color_str("##\n", RED);
 			}
 		}
-		// printl("> **STACK CHECK ERROR**: aborting process.\n");
-		// p_proc_ready->name[0] = ABORT_MAGIC_0;
-		// p_proc_ready->name[1] = ABORT_MAGIC_1;
     }
 #endif
 }
+
+#undef MAP
+
+// disp_color_str("##", RED);
+// disp_color_str(p_proc_ready->name, GREEN);
+// disp_color_str("##\n", RED);
+// // disp_color_str(" pid: ", GREEN);
+// // disp_int(p_proc_ready - proc_table);
+// disp_color_str(" last: ", GREEN); // last eip (return address)
+// disp_int(eip);
+// disp_color_str(" eip: ", GREEN);
+// disp_int(p_proc_ready->regs.eip);
+// disp_color_str(" ebp: ", GREEN);
+// disp_int((int)ebp);
+// disp_color_str(" *ebp: ", GREEN);
+// disp_int(*ptr);
+// disp_color_str(" esp: ", GREEN);
+// disp_int(p_proc_ready->regs.esp);

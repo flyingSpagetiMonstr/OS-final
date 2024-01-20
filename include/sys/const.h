@@ -52,6 +52,7 @@
 // #define ABORTED 0x40
 #define KILLED 0xb10
 #define INIT_EBP 0xffffffff
+// #define INIT_EBP ((unsigned int *)0xffffffff)
 
 
 

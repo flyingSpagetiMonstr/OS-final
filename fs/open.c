@@ -59,7 +59,7 @@ PUBLIC int do_open()
 	tmp[4] = 0;
 
 	// only allowing TASKs and INIT to visit "chk-"
-	if (strcmp(tmp, "chk-") == 0 && src > NR_TASKS)
+	if (strcmp(tmp, "chk-") == 0 && src > INIT)
 	{
 		return -1;
 	}

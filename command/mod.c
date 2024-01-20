@@ -1,4 +1,3 @@
-// #include "elf_local.h"
 #include "stdio.h"
 #include "string.h"
 #include <elf.h>

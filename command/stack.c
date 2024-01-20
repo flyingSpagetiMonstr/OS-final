@@ -11,12 +11,9 @@
 
 #define MAX (0xff)
 
-
-
 void dest(void)
 {
     // delay
-    printf("In dest now\n");
     int i, j, k;
 	for(k = 0; k < 0xf; k++)
     {
@@ -25,6 +22,7 @@ void dest(void)
 			for(j = 0; j < 10000; j++) {}
 		}
 	}
+    printf("In dest now\n");
     exit(0);
 }
 

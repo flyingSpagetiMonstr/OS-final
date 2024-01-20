@@ -18,7 +18,7 @@
 
 PUBLIC void kill(int pid)
 {
-    disp_color_str("KILLING\n", RED);
+    // disp_color_str("KILLING\n", RED);
 	MESSAGE msg;
 	msg.type = KILL;
 	msg.PID = pid;

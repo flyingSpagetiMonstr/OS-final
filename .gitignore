@@ -10,6 +10,7 @@ pwd
 ticker
 ls
 mod
+kill
 
 *.a
 

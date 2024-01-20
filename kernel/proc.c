@@ -47,7 +47,7 @@ queue Q_new = {0, 0};
 #define KILLER_PID 6 
 // #define ABORT_MAGIC '\3'
 
-void stack_chk(struct proc* p_proc_ready);
+int stack_chk(struct proc* p_proc_ready);
 int stack_efl = 0;
 
 PUBLIC void schedule()
@@ -74,39 +74,44 @@ PUBLIC void schedule()
 			if (p_proc_ready->ticks <= 0)
 			{
 				p_proc_ready->ticks = tick_of[current+next];
-				enqueue(&Q[current+next], p_proc_ready);
+				if (stack_chk(p_proc_ready)) enqueue(&Q[current+next], p_proc_ready);
 			}
 			else
 			{
-				enqueue(&Q[current], p_proc_ready);
+				if (stack_chk(p_proc_ready)) enqueue(&Q[current], p_proc_ready);
 			}
 			assert(ret != -1);
 			p_proc_ready = dequeue(&Q[index]);
 			current = index;
 			goto finish;
+			// return;
 		}
 	}
 
-// && !(p_proc_ready->name[0] == ABORT_MAGIC_0 && p_proc_ready->name[1] == ABORT_MAGIC_1)
-	if (p_proc_ready->ticks > 0 && p_proc_ready->p_flags == 0) 
+	// if (memcmp(p_proc_ready->name, ABORT_MAGIC, sizeof(ABORT_MAGIC)-1) == 0)
+	// {
+	// 	disp_color_str(p_proc_ready->name, RED);
+	// }
+
+	if (p_proc_ready->ticks > 0 && p_proc_ready->p_flags == 0 && stack_chk(p_proc_ready)) 
 	{
 		goto finish;
+		// return;
 	}
 
 	if (p_proc_ready->p_flags != 0)
 	{
-		ret = enqueue(&Q_block, p_proc_ready);
+		if (stack_chk(p_proc_ready)) ret = enqueue(&Q_block, p_proc_ready);
 	}
 	else if (p_proc_ready->ticks <= 0)
 	{
 		p_proc_ready->ticks = tick_of[current+next];
-		ret = enqueue(&Q[current+next], p_proc_ready);
+		if (stack_chk(p_proc_ready)) ret = enqueue(&Q[current+next], p_proc_ready);
 	}
 	assert(ret != -1);
 
 	for (/*current = current*/; current < Q_N; current++)
 	{
-
 		p_proc_ready = dequeue(&Q[current]);
 
 		if (p_proc_ready != NULL)
@@ -116,7 +121,10 @@ PUBLIC void schedule()
 	}
 
 finish:
-	stack_chk(p_proc_ready);
+	if (strcmp(p_proc_ready->name, "stack") == 0)
+	{
+		disp_int(stack_chk(p_proc_ready));
+	}
 	return;
 }
 
@@ -863,65 +871,47 @@ void Q_set(queue *dst)
 }
 
 
+// #define MAP(ebp) (va2la(pid, ebp))
+
+// void stack_chk(struct proc* p_proc_ready)
+// {
+// 	int pid = p_proc_ready - proc_table;
+
+// 	if (pid < NR_TASKS + NR_NATIVE_PROCS) return; 
+
+// 	unsigned int *original_ebp = (unsigned int *)(p_proc_ready->regs.ebp);
+// 	unsigned int *ebp = MAP(original_ebp);
+
+// 	if ((u32)ebp != INIT_EBP)
+// 	{
+// 		if (*ebp == 0 || *ebp > PROC_IMAGE_SIZE_DEFAULT - STACK_SIZE_DEFAULT)
+// 		{
+// 			// printl("! **STACK CHECK ERROR**: Aborting process.\n");
+// 			// 	memcpy(p_proc_ready->name, ABORT_MAGIC, sizeof(ABORT_MAGIC)-1);
+// 		}
+// 	}
+// }
+
+
 #define MAP(ebp) (va2la(pid, ebp))
 
-void stack_chk(struct proc* p_proc_ready)
+int stack_chk(struct proc* p_proc_ready)
 {
 	int pid = p_proc_ready - proc_table;
 
-	if(pid > NR_TASKS) return;
+	if (pid < NR_TASKS + NR_NATIVE_PROCS) return 1; 
 
 	unsigned int *original_ebp = (unsigned int *)(p_proc_ready->regs.ebp);
 	unsigned int *ebp = MAP(original_ebp);
 
-#if 0
-// ================================= 
-
-	while ((unsigned int)ebp != (unsigned int)-1)
+	if ((u32)ebp != INIT_EBP)
 	{
-		if (ebp < PROC_IMAGE_SIZE_DEFAULT - PROC_ORIGIN_STACK
-			|| ebp >= PROC_IMAGE_SIZE_DEFAULT)
+		if (*ebp == 0)
 		{
-			// disp_str() ... 
+			printl("! **STACK CHECK ERROR**: Aborting process.\n");
+			return 0;
+			// memcpy(p_proc_ready->name, ABORT_MAGIC, sizeof(ABORT_MAGIC)-1);
 		}
-
-		ebp = (unsigned int *)*ebp;
 	}
-
-// ================================= 
-#else
-	if (stack_efl)
-	{
-		if ((u32)ebp != INIT_EBP)
-		{
-			if (*ebp == 0)
-			{
-				printl("! **STACK CHECK ERROR**: Aborting process.\n");
-				memcpy(p_proc_ready->name, ABORT_MAGIC, sizeof(ABORT_MAGIC)-1);
-				// kill(pid);
-				disp_color_str("##", RED);
-				disp_color_str(p_proc_ready->name, GREEN);
-				disp_color_str("##\n", RED);
-			}
-		}
-    }
-#endif
+	return 1;
 }
-
-#undef MAP
-
-// disp_color_str("##", RED);
-// disp_color_str(p_proc_ready->name, GREEN);
-// disp_color_str("##\n", RED);
-// // disp_color_str(" pid: ", GREEN);
-// // disp_int(p_proc_ready - proc_table);
-// disp_color_str(" last: ", GREEN); // last eip (return address)
-// disp_int(eip);
-// disp_color_str(" eip: ", GREEN);
-// disp_int(p_proc_ready->regs.eip);
-// disp_color_str(" ebp: ", GREEN);
-// disp_int((int)ebp);
-// disp_color_str(" *ebp: ", GREEN);
-// disp_int(*ptr);
-// disp_color_str(" esp: ", GREEN);
-// disp_int(p_proc_ready->regs.esp);

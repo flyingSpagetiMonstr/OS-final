@@ -287,7 +287,7 @@ PUBLIC void do_wait()
 // =======================================================================
 PUBLIC void do_kill(int pid)
 {
-	if (proc_table[pid].p_flags == FREE_SLOT)
+	if (proc_table[pid].p_flags == FREE_SLOT || pid >= NR_TASKS + NR_PROCS || pid <= INIT)
 	{
 		printl("! **KILL ERROR**: No such process.\n");
 		return;

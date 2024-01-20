@@ -43,9 +43,6 @@ queue Q_new = {0, 0};
 
 // ##################################
 #define STACK_CHECK 1
-// #define ABORT_MAGIC "\3\3\3"
-// #define KILLER_PID 6 
-// #define ABORT_MAGIC '\3'
 
 int stack_chk(struct proc* p_proc_ready);
 int stack_efl = 0;
@@ -87,11 +84,6 @@ PUBLIC void schedule()
 			// return;
 		}
 	}
-
-	// if (memcmp(p_proc_ready->name, ABORT_MAGIC, sizeof(ABORT_MAGIC)-1) == 0)
-	// {
-	// 	disp_color_str(p_proc_ready->name, RED);
-	// }
 
 	if (p_proc_ready->ticks > 0 && p_proc_ready->p_flags == 0 && stack_chk(p_proc_ready)) 
 	{
@@ -867,28 +859,6 @@ void Q_set(queue *dst)
 }
 
 
-// #define MAP(ebp) (va2la(pid, ebp))
-
-// void stack_chk(struct proc* p_proc_ready)
-// {
-// 	int pid = p_proc_ready - proc_table;
-
-// 	if (pid < NR_TASKS + NR_NATIVE_PROCS) return; 
-
-// 	unsigned int *original_ebp = (unsigned int *)(p_proc_ready->regs.ebp);
-// 	unsigned int *ebp = MAP(original_ebp);
-
-// 	if ((u32)ebp != INIT_EBP)
-// 	{
-// 		if (*ebp == 0 || *ebp > PROC_IMAGE_SIZE_DEFAULT - STACK_SIZE_DEFAULT)
-// 		{
-// 			// printl("! **STACK CHECK ERROR**: Aborting process.\n");
-// 			// 	memcpy(p_proc_ready->name, ABORT_MAGIC, sizeof(ABORT_MAGIC)-1);
-// 		}
-// 	}
-// }
-
-
 #define MAP(ebp) (va2la(pid, ebp))
 
 int stack_chk(struct proc* p_proc_ready)
@@ -910,7 +880,6 @@ int stack_chk(struct proc* p_proc_ready)
 		{
 			printl("! **STACK CHECK ERROR**: Aborting process.\n");
 			return 0;
-			// memcpy(p_proc_ready->name, ABORT_MAGIC, sizeof(ABORT_MAGIC)-1);
 		}
 	}
 	return 1;

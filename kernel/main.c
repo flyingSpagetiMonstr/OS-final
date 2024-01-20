@@ -371,6 +371,7 @@ void shabby_shell(const char * tty_name)
 			else 
 			{
 				execv(argv[0], argv);
+				// exit(0); // in case that execv failed, then there will be two shells on same console.
 			}
 		}
 	}

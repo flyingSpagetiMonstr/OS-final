@@ -407,8 +407,6 @@ void Init()
 	assert(fd_stdout == 1);
 
 	printf("> Init() is running ...\n");
-	// printf("> Address of printf: 0x%x\n", printf);
-	// printf("> Address of exit: 0x%x\n", exit);
 
 	/* extract `cmd.tar' */
 	untar("/cmd.tar");

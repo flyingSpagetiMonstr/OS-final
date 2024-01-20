@@ -36,7 +36,7 @@ PUBLIC int do_rdwt()
 {
 // printl("Read write-00\n");
 	int fd = fs_msg.FD;	/**< file descriptor. */
-	void * buf = fs_msg.BUF;/**< r/w buffer */
+	void *buf = fs_msg.BUF;/**< r/w buffer */
 	int len = fs_msg.CNT;	/**< r/w bytes */
 
 	int src = fs_msg.source;		/* caller proc nr. */

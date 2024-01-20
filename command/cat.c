@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
 	// printf("filename: %s: \n", filename);
 
 	int fd = open(filename, O_RDWR);
-	if (fd == -1) { printf("No such file\n"); return 1; }
+	if (fd == -1) { printf("Unable to open, maybe no such file\n"); return 1; }
 
 	unsigned char buf[16 * 16] = {0};
 	int size = read(fd, buf, sizeof(buf));

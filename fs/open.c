@@ -54,6 +54,16 @@ PUBLIC int do_open()
 		  name_len);
 	pathname[name_len] = 0;
 
+	char tmp[5] = {0};
+	memcpy(tmp, pathname, sizeof("chk-"));
+	tmp[4] = 0;
+
+	// only allowing TASKs and INIT to visit "chk-"
+	if (strcmp(tmp, "chk-") == 0 && src > NR_TASKS)
+	{
+		return -1;
+	}
+
 	/* find a free slot in PROCESS::filp[] */
 	int i;
 	for (i = 0; i < NR_FILES; i++) {

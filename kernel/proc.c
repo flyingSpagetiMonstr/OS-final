@@ -30,7 +30,6 @@ PRIVATE int  deadlock(int src, int dest);
  * <Ring 0> Choose one proc to run.
  * 
  *****************************************************************************/
-#if 1
 queue Q[Q_N] = {
 	{0, 0},
 	{0, 0},
@@ -43,18 +42,26 @@ queue Q_block = {0, 0};
 queue Q_new = {0, 0};
 
 // ##################################
-// #define disp_color_str 
-int ticker_created =  0;
+#define STACK_CHECK 1
+#define ABORT_MAGIC_0 '\1'
+#define ABORT_MAGIC_1 'X'
+void stack_chk(struct proc* p_proc_ready);
+int stack_efl = 0;
 
 PUBLIC void schedule()
 {
-	if (ticker_created) disp_color_str(" S ", BLUE);
+#if STACK_CHECK
+	// only checking processes after INIT (in proc_table)
+	if(p_proc_ready - proc_table > NR_TASKS) stack_chk(p_proc_ready);
+	if (!stack_efl)
+	{
+		if (strcmp(p_proc_ready->name, "stack") == 0)
+		{
+			stack_efl = 1;
+		}
+	}
+#endif
 
-	// if ((!ticker_created) && strcmp(p_proc_ready->name, "ticker") == 0)
-	// {
-	// 	ticker_created = 1;
-	// }
-	
 	wash(Q, &Q_block, &Q_new);
 
 	// put_in_next_queue or not
@@ -76,19 +83,16 @@ PUBLIC void schedule()
 				enqueue(&Q[current], p_proc_ready);
 			}
 			assert(ret != -1);
-			// disp_int(p_proc_ready->ticks);
 			p_proc_ready = dequeue(&Q[index]);
 			current = index;
-			if (ticker_created) disp_color_str(" N-0: ", BLUE);
-			if (ticker_created) disp_color_str(p_proc_ready->name, GREEN);
-			return;
+			goto finish;
 		}
 	}
 
-	if (p_proc_ready->ticks > 0 && p_proc_ready->p_flags == 0) {
-		if (ticker_created) disp_color_str(" N-1: ", BLUE);
-		if (ticker_created) disp_color_str(p_proc_ready->name, GREEN);
-		return;
+// && !(p_proc_ready->name[0] == ABORT_MAGIC_0 && p_proc_ready->name[1] == ABORT_MAGIC_1)
+	if (p_proc_ready->ticks > 0 && p_proc_ready->p_flags == 0) 
+	{
+		goto finish;
 	}
 
 	if (p_proc_ready->p_flags != 0)
@@ -102,7 +106,6 @@ PUBLIC void schedule()
 	}
 	assert(ret != -1);
 
-
 	for (/*current = current*/; current < Q_N; current++)
 	{
 
@@ -113,10 +116,10 @@ PUBLIC void schedule()
 			break;
 		}
 	}
-	if (ticker_created) disp_color_str(" N-2: ", BLUE);
-	if (ticker_created) disp_color_str(p_proc_ready->name, GREEN);
+
+finish:
+	return;
 }
-#endif
 
 
 PUBLIC void _schedule()
@@ -692,7 +695,7 @@ PUBLIC void dump_msg(const char * title, MESSAGE* m)
 	       packed ? "" : "\n"/* , */
 		);
 }
-#if 1
+
 // ==============================================================================
 // queue.c: 
 
@@ -859,4 +862,59 @@ void Q_set(queue *dst)
 	dst->rear = 0;
 	return;
 }
+
+void stack_chk(struct proc* p_proc_ready)
+{
+	unsigned int *ebp = (unsigned int *)(p_proc_ready->regs.ebp);
+#if 0
+// ================================= 
+
+	while ((unsigned int)ebp != (unsigned int)-1)
+	{
+		if (ebp < PROC_IMAGE_SIZE_DEFAULT - PROC_ORIGIN_STACK
+			|| ebp >= PROC_IMAGE_SIZE_DEFAULT)
+		{
+			// disp_str() ... 
+		}
+
+		ebp = (unsigned int *)*ebp;
+	}
+
+// ================================= 
+#else
+// 0x100000 /*  1 MB */
+//      400    /*  1 KB */
+// 0x0ffC00
+
+	unsigned int eip = *(ebp + 1);
+	// if eip is on stack or eip > image size
+
+	// if (eip >= (PROC_IMAGE_SIZE_DEFAULT - PROC_ORIGIN_STACK)
+		// || *ebp == 0)
+	if (stack_efl)
+	{
+		if ((unsigned int)ebp != (unsigned int)-1)
+		{
+			if (*ebp == 0)
+			{
+				// disp_color_str(" eip: ", GREEN);
+				// disp_int(eip);
+				disp_color_str("##", RED);
+				disp_color_str(p_proc_ready->name, GREEN);
+				disp_color_str(" pid: ", GREEN);
+				disp_int(p_proc_ready - proc_table);
+				disp_color_str(" ebp: ", GREEN);
+				disp_int(ebp);
+				disp_color_str(" *ebp: ", GREEN);
+				disp_int(*ebp);
+				disp_color_str(" esp: ", GREEN);
+				disp_int(p_proc_ready->regs.esp);
+				disp_color_str("##\n", RED);
+			}
+		}
+		// printl("> **STACK CHECK ERROR**: aborting process.\n");
+		// p_proc_ready->name[0] = ABORT_MAGIC_0;
+		// p_proc_ready->name[1] = ABORT_MAGIC_1;
+    }
 #endif
+}

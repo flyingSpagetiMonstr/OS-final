@@ -55,6 +55,7 @@ PUBLIC void task_fs()
 		switch (msgtype) {
 		case OPEN:
 			fs_msg.FD = do_open();
+			// printl("> chk_lock: %d\n", chk_lock);
 			break;
 		case CLOSE:
 			fs_msg.RETVAL = do_close();

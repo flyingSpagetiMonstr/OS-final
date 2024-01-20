@@ -48,6 +48,10 @@
 #define FREE_SLOT 0x20	/* set when proc table entry is not used
 			 * (ok to allocated to a new process)
 			 */
+// #####################
+#define ABORTED 0x40
+
+
 
 /* TTY */
 #define NR_CONSOLES	3	/* consoles */
@@ -194,6 +198,11 @@ enum msgtype {
 	// my FS msg:
 	SEARCH
 };
+
+// enum file_mode{
+// 	R,
+// 	WR,
+// };
 
 /* macros for messages */
 #define	FD		u.m3.m3i1

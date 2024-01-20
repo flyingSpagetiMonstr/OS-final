@@ -21,6 +21,7 @@
 #include "proto.h"
 #include "elf.h"
 
+#define TAMPER_CHK 0
 
 /*****************************************************************************
  *                                do_exec
@@ -55,23 +56,35 @@ PUBLIC int do_exec()
 
 	/* read the file */
 
-// printl("open pathname\n");
 	int fd = open(pathname, O_RDWR);
-// printl("opened pathname\n");
-
-	if (fd == -1)
-		return -1;
+	if (fd == -1) return -1;
 	assert(s.st_size < MMBUF_SIZE);
-
-// printl("read\n");
 	read(fd, mmbuf, s.st_size);
-// printl("read fin\n");
 
-// printl("close fd\n");
-
+// ##################################
+	unsigned char checksum = 0, stored = 0;
+	for (int i = 0; i < s.st_size; i++)
+	{
+		checksum ^= mmbuf[i];
+	}
+	
 	close(fd);
 
-// printl("T1\n");
+// ##################################
+	// printl("checksum: %x\n", checksum);
+
+	char chk_file_name[MAX_PATH] = {0};
+	sprintf(chk_file_name, "chk-%s", pathname);
+
+	int fd_chk = open(chk_file_name, O_RDWR);
+	if (fd == -1) return -1;
+	read(fd_chk, &stored, sizeof(stored));
+	close(fd_chk);
+	// printl("stored: %x\n", stored);
+
+#if TAMPER_CHK
+	if (checksum != stored) { printl("> **PROGRAM TAMPERED**: execv canceled.\n"); return -1; }
+#endif
 
 	/* overwrite the current proc image with the new one */
 	Elf32_Ehdr* elf_hdr = (Elf32_Ehdr*)(mmbuf);

@@ -31,3 +31,4 @@ command/others/elf.h
 # command/payload.c
 
 *.exe
+dsct.c

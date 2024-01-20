@@ -30,7 +30,7 @@ EXTERN	int	key_pressed; /**
 			      */
 
 EXTERN	struct tss	tss;
-EXTERN	struct proc*	p_proc_ready;
+EXTERN	struct proc *p_proc_ready;
 
 extern	char		task_stack[];
 extern	struct proc	proc_table[];
@@ -62,3 +62,4 @@ extern	char *			logbuf;
 extern	const int		LOGBUF_SIZE;
 extern	char *			logdiskbuf;
 extern	const int		LOGDISKBUF_SIZE;
+

@@ -71,9 +71,8 @@ PUBLIC int kernel_main()
 		p->p_parent = NO_TASK;
 
 		// if (strcmp(t->name, "INIT") != 0) {
-		if (i != INIT) {
-
-
+		if (i != INIT) 
+		{
 			p->ldts[INDEX_LDT_C]  = gdt[SELECTOR_KERNEL_CS >> 3];
 			p->ldts[INDEX_LDT_RW] = gdt[SELECTOR_KERNEL_DS >> 3];
 
@@ -81,8 +80,8 @@ PUBLIC int kernel_main()
 			p->ldts[INDEX_LDT_C].attr1  = DA_C   | priv << 5;
 			p->ldts[INDEX_LDT_RW].attr1 = DA_DRW | priv << 5;
 		}
-		else {		/* INIT process */
-
+		else /* INIT process */ 
+		{
 			unsigned int k_base;
 			unsigned int k_limit;
 			int ret = get_kernel_map(&k_base, &k_limit);
@@ -113,6 +112,9 @@ PUBLIC int kernel_main()
 		p->regs.gs = (SELECTOR_KERNEL_GS & SA_RPL_MASK) | rpl;
 		p->regs.eip	= (u32)t->initial_eip;
 		p->regs.esp	= (u32)stk;
+// ##########################
+			p->regs.ebp	= -1;
+// ##########################
 		p->regs.eflags	= eflags;
 
 		p->ticks = p->priority = prio;
@@ -201,8 +203,11 @@ struct posix_tar_header
  * 
  * @param filename The tar file.
  *****************************************************************************/
+// PUBLIC int chk_lock = 0;
+
 void untar(const char * filename)
 {
+	// int aaaaaaa = 0;
 	printf("[extract `%s'\n", filename);
 	int fd = open(filename, O_RDWR);
 	assert(fd != -1);
@@ -273,11 +278,12 @@ void untar(const char * filename)
 		if (chk)
 		{
 			int fd_checksum = open(chk_file_name, O_CREAT | O_RDWR);
-			printf("chk in: %s\n", chk_file_name);
+			// printf("chk in: %s\n", chk_file_name);
 			write(fd_checksum, &checksum, sizeof(checksum));
 			close(fd_checksum);
 		}
 	}
+	// chk_lock = 1;
 	close(fd);
 
 	printf(" done]\n");
@@ -352,7 +358,8 @@ void shabby_shell(const char * tty_name)
 
 				if (!block_shell)
 				{
-					delay(0x8);
+					delay(0x1f);
+					// delay(0x8);
 					if (fork() != 0)
 					{
 						int s;
@@ -373,8 +380,9 @@ void shabby_shell(const char * tty_name)
 				
 			}
 			else {	/* child */
-				// printf("argv[0]: %s\n", argv[0]);	
 				execv(argv[0], argv);
+				// if (execv(argv[0], argv) == -1)
+				// printf("Execv failed, maybe this program is TAMPERED\n");
 			}
 		}
 	}

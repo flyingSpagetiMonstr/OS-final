@@ -205,7 +205,6 @@ PRIVATE void hd_rdwt(MESSAGE * p)
 	int bytes_left = p->CNT;
 	void * la = (void*)va2la(p->PROC_NR, p->BUF);
 
-// printl("hd_rdwt-magic\n"); // don't delet this magic printl!
 delay(0x1); // wait for disk to fin?
 
 	while (bytes_left) {

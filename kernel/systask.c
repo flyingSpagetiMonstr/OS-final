@@ -36,7 +36,6 @@ PUBLIC void task_sys()
 	struct time t;
 
 	while (1) {
-// disp_str("-sys_before-block "); delay(0xffff);
 
 		send_recv(RECEIVE, ANY, &msg);
 		int src = msg.source;

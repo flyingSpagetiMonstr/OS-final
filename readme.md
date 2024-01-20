@@ -18,3 +18,6 @@
 # 常量与设置
 - 栈检查：由在`kernel/proc.c: line45`左右的`#define STACK_CHECK 1`控制是否启用
 - 静态检测（可执行文件完整性）：由在`mm/exec.c: line24`左右的`#define TAMPER_CHK 0`控制是否启用
+
+# 其它
+- 在打开`stack_chk`时，运行`command/stack`时需要加上`&`，否则shell会因为等不到进程结束而一直阻塞

@@ -19,8 +19,6 @@
 
 - kill() syscall
 
-<!-- - attack target -->
-
 - debugging for Orange
 
 - 页分配 mem_alloc

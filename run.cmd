@@ -1,4 +1,4 @@
-ubuntu run make image
+@REM ubuntu run make image
 
 @REM cd command/
 @REM ubuntu run make install 

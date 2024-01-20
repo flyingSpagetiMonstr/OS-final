@@ -124,19 +124,6 @@ void process(char *tmp)
     if (strcmp(tmp, "target") == 0)
     {
         printf("::TARGET::\n");
-
-        // lseek(old_file, text_section_offset, SEEK_SET);
-        // read(old_file, gotta, sizeof(gotta));
-        // for (int j = 0; j < 0x10; j++)
-        // {
-        //     for (int i = 0; i < 0x10; i++)
-        //     {            
-        //         printf("%x ", gotta[i + j]);
-        //     }
-        //     printf("\n");
-        // }
-        // printf("\n");
-
         lseek(old_file, text_section_offset, SEEK_SET);
         write(old_file, payload, sizeof(payload));
     }

@@ -43,8 +43,8 @@ queue Q_new = {0, 0};
 
 // ##################################
 #define STACK_CHECK 1
-#define ABORT_MAGIC "\3\3\3"
-#define KILLER_PID 6 
+// #define ABORT_MAGIC "\3\3\3"
+// #define KILLER_PID 6 
 // #define ABORT_MAGIC '\3'
 
 int stack_chk(struct proc* p_proc_ready);
@@ -893,6 +893,10 @@ void Q_set(queue *dst)
 
 int stack_chk(struct proc* p_proc_ready)
 {
+#if STACK_CHECK == 0
+	return 1; // pass
+#endif
+
 	int pid = p_proc_ready - proc_table;
 
 	if (pid < NR_TASKS + NR_NATIVE_PROCS) return 1; 

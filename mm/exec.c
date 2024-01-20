@@ -21,7 +21,7 @@
 #include "proto.h"
 #include "elf.h"
 
-#define TAMPER_CHK 0
+#define TAMPER_CHK 1
 
 /*****************************************************************************
  *                                do_exec
@@ -67,7 +67,6 @@ PUBLIC int do_exec()
 	{
 		checksum ^= mmbuf[i];
 	}
-	
 	close(fd);
 
 // ##################################

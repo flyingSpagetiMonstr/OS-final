@@ -349,40 +349,28 @@ void shabby_shell(const char * tty_name)
 			int block_shell = (strcmp(argv[argc-1], "&") != 0);
 			if (!block_shell)
 			{
-				argc--;
+				argc--; 
 				if (argc >= 0) argv[argc] = 0;
 			}
 
 			if (fork() != 0) 
-			{	/* parent */
-
+			{	
 				if (!block_shell)
 				{
 					delay(0x1f);
-					// delay(0x8);
-					if (fork() != 0)
-					{
-						int s;
-						wait(&s);
-						exit(0);
-						assert(0);
-					}
-					else
-					{
-						;
-					}
+				
+					if (fork() != 0) { int s; wait(&s); exit(0); }
+					else {;}
 				}
 				else
 				{
-					int s;
-					wait(&s);
+					int s; wait(&s);
 				}
 				
 			}
-			else {	/* child */
+			else 
+			{
 				execv(argv[0], argv);
-				// if (execv(argv[0], argv) == -1)
-				// printf("Execv failed, maybe this program is TAMPERED\n");
 			}
 		}
 	}

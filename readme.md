@@ -14,3 +14,7 @@
     ```
 3. 运行Bochs
    - Bochs配置文件见`bochsrc.sh`
+
+# 常量与设置
+- 栈检查：由在`kernel/proc.c: line45`左右的`#define STACK_CHECK 1`控制是否启用
+- 静态检测（可执行文件完整性）：由在`mm/exec.c: line24`左右的`#define TAMPER_CHK 0`控制是否启用

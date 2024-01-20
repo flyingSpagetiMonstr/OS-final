@@ -13,15 +13,11 @@
 
 void dest(void)
 {
-    // delay
     int i, j, k;
-	for(k = 0; k < 0xf; k++)
-    {
-		for(i = 0; i < 10; i++)
-        {
-			for(j = 0; j < 10000; j++) {}
-		}
-	}
+	for(k = 0; k < 0xf; k++) 
+        for(i = 0; i < 10; i++) 
+            for(j = 0; j < 10000; j++) {}
+
     printf("In dest now\n");
     exit(0);
 }

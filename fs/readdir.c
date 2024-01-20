@@ -38,7 +38,8 @@ PUBLIC void fs_readdir() {
         (void*)va2la(fs_msg.source, fs_msg.PATHNAME),
         min(fs_msg.NAME_LEN, sizeof(result)));
 
-    if (strip_path(filename, result, &inode) != 0) {
+    if (strip_path(filename, result, &inode) != 0) 
+    {
         memset(result, 0, sizeof(result));
         goto ret;
     }

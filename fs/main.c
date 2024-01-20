@@ -77,7 +77,6 @@ PUBLIC void task_fs()
 			fs_msg.RETVAL = fs_exit();
 			break;
 		case SEARCH:
-			// fs_msg.BUF = fs_readdir();
 			fs_readdir();
 			break;
 

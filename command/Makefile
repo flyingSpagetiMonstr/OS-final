@@ -12,7 +12,7 @@ CFLAGS		= -I ../include/ -c -fno-builtin -fno-stack-protector -Wall -m32
 LDFLAGS		= -Ttext 0x1000 -m elf_i386
 DASMFLAGS	= -D
 LIB		= ../lib/orangescrt.a
-BIN		= cat ticker mod stack target kill # echo pwd lseektest ls payload  
+BIN		= mod stack target kill ls # cat ticker echo pwd lseektest payload  
 
 # All Phony Targets
 .PHONY : everything final clean realclean disasm all install

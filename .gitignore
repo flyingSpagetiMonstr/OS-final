@@ -2,7 +2,7 @@
 *.tar
 *.img*
 *.o
-*test.c
+# *test.c
 
 cat 
 echo 
@@ -11,6 +11,7 @@ ticker
 ls
 mod
 kill
+payload
 
 *.a
 
@@ -27,13 +28,12 @@ lseektest
 stack.asm
 stack
 
-command/payload
 target
 
 command/others/elf.h
 # command/payload.c
 
-*.exe
-dsct.c
+# *.exe
+# dsct.c
 
 # payload.asm

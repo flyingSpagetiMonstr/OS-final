@@ -17,7 +17,7 @@
 - 静态检测： checksum（存在文件里） 文件访问控制
 - 动态检测： ebp链检查
 
-- kill()
+- kill() syscall
 
 <!-- - attack target -->
 

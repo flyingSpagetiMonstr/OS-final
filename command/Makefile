@@ -12,13 +12,13 @@ CFLAGS		= -I ../include/ -c -fno-builtin -fno-stack-protector -Wall -m32
 LDFLAGS		= -Ttext 0x1000 -m elf_i386
 DASMFLAGS	= -D
 LIB		= ../lib/orangescrt.a
-BIN		= cat ticker mod stack target kill
+BIN		= cat ticker mod stack target kill # echo pwd lseektest ls payload  
 
 # All Phony Targets
 .PHONY : everything final clean realclean disasm all install
 
 # Default starting position
-everything : $(BIN) echo pwd lseektest ls
+everything : $(BIN) 
 
 install : all clean
 	cp ../kernel.bin ./ -v
@@ -92,10 +92,10 @@ stack.asm: stack.c ../include/type.h ../include/stdio.h ../include/string.h
 # lseektest : lseektest.o start.o $(LIB)
 # 	$(LD) $(LDFLAGS) -o $@ $? 
 
-payload.o: payload.c
-	$(CC) $(CFLAGS) -o $@ $<
+payload.o: payload.asm
+	$(ASM) $(ASMFLAGS) -o $@ $<
 
-payload : payload.o start.o
+payload : payload.o
 	$(LD) $(LDFLAGS) -o $@ $^
 
 target.o: target.c ../include/type.h ../include/stdio.h

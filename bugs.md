@@ -1,3 +1,5 @@
+# Bugs of Orange's
+
 - strcmp "INIT"
 - command/ printf(argv[1])::OK printf(argv[1])::BUG 
 - hd driver: delay

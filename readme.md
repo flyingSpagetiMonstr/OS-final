@@ -5,7 +5,12 @@
   - 代码在WSL（64位Ubuntu）下编译生成二进制文件：Ubuntu 22.04.3 LTS (GNU/Linux 5.15.137.3-microsoft-standard-WSL2 x86_64)
 
 # 编译
-可参考`run.cmd`
-- 编译OS内核：在工作区根目录下运行`make image`
-- 编译OS的可执行文件（和其它相关文件）：在`command/`下运行`make install`
-  - 由于Orange's文件系统限制，无法同时载入较多
+参考`run.cmd`
+1. 编译OS内核：在工作区根目录下运行`make image`
+2. 编译OS的可执行文件（和其它相关文件）：在`command/`下运行`make install`
+  - 由于Orange's文件系统限制，无法同时载入较多文件，故一次运行只载入部分文件，见`command/Makefile: line15`，这里`#`后被注释掉的均不会被载入文件系统。
+    ```makefile
+    BIN = cat ticker mod stack target kill # echo pwd lseektest ls payload  
+    ```
+3. 运行Bochs
+   - Bochs配置文件见`bochsrc.sh`

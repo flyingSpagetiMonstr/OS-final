@@ -121,10 +121,10 @@ PUBLIC void schedule()
 	}
 
 finish:
-	if (strcmp(p_proc_ready->name, "stack") == 0)
-	{
-		disp_int(stack_chk(p_proc_ready));
-	}
+	// if (strcmp(p_proc_ready->name, "stack") == 0)
+	// {
+	// 	disp_int(stack_chk(p_proc_ready));
+	// }
 	return;
 }
 

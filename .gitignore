@@ -31,6 +31,9 @@ stack
 target
 
 command/others/elf.h
+
+others/
+
 # command/payload.c
 
 # *.exe

@@ -5,9 +5,7 @@
 - command
   - cat
   - ls
-
   - cmd &
-
   - ticker
   - (mod, stack, target)
 
@@ -19,11 +17,6 @@
 
 - kill() syscall
 
-- debugging for Orange
-
 - 页分配 mem_alloc
 
-# 分工
-- 朱正杰：elf注入 栈溢出
-- 王权：除elf文件细节都有
-- 蔡天健：动态检测 栈溢出
+- debugging for Orange's

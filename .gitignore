@@ -32,7 +32,7 @@ target
 
 command/others/elf.h
 
-others/
+free/
 
 # command/payload.c
 
